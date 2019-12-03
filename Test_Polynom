@@ -1,0 +1,19 @@
+package Ex1;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+class Test_Polynom {
+
+	@Test
+	void create_Polynom() {
+		String[] Polynom = { "4x^2-x^4+0", "-2x-3x^1+1", "5x^7+x^0", "8x^0+7x+3x" };
+		String[] expected = { "-1x^4+4x^2", "-5x+2", "5x^7+1", "10x+1" };
+		for (int i = 0; i < Polynom.length; i++) {
+			Polynom p = new Polynom(Polynom[i]);
+			assertEquals(expected[i], p.toString());
+		}
+	}
+
+}
