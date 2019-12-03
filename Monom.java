@@ -1,5 +1,4 @@
-
-package myMath;
+package Ex1;
 
 import java.util.Comparator;
 
@@ -15,24 +14,38 @@ import java.util.Comparator;
  * 
  * @author Boaz
  * 
- * *-----this class represent: 
+ *         *-----this class represent:
  * 
- *1)Monom - use the extract_coefficient and extract_power functio
- *2)extract_coefficient - Checks whether the string is empty, whether it starts with X, whether it starts with X,
- * and whether it appears in X.
- *3)extract_power - Checks whether the string is empty or contains no X, does it contain the character ^,
- * and check if X is not the last char in the string.
- *6)add - if the power of the monoms are equals, add their coefficient.
- *8)substract - if the power of the monoms are equals, substract their coefficient.
- *10)multiply - multiply their coefficient and add their power.
- *11)equals - return if their power and their coefficient are equals.
- *12)toString - take a Monom and covert it to String.
+ *         1)Monom - use the extract_coefficient and extract_power functio
+ *         2)extract_coefficient - Checks whether the string is empty, whether
+ *         it starts with X, whether it starts with X, and whether it appears in
+ *         X. 3)extract_power - Checks whether the string is empty or contains
+ *         no X, does it contain the character ^, and check if X is not the last
+ *         char in the string. 6)add - if the power of the monoms are equals,
+ *         add their coefficient. 8)substract - if the power of the monoms are
+ *         equals, substract their coefficient. 10)multiply - multiply their
+ *         coefficient and add their power. 11)equals - return if their power
+ *         and their coefficient are equals. 12)toString - take a Monom and
+ *         covert it to String.
  */
 public class Monom implements function {
 	public static final Monom ZERO = new Monom(0, 0);
 	public static final Monom MINUS1 = new Monom(-1, 0);
 	public static final double EPSILON = 0.0000001;
 	public static final Comparator<Monom> _Comp = new Monom_Comperator();
+
+	public function initFromString(String s) {
+		
+		return null;
+	}
+
+	public function copy() {
+		return null;
+	} // clone
+
+	public boolean equals(Object obj) {
+		return this.equals(obj);
+	}
 
 	public static Comparator<Monom> getComp() {
 		return _Comp;
