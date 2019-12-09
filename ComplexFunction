@@ -2,10 +2,7 @@ package Ex1;
 
 import java.util.ArrayList;
 
-import org.hamcrest.core.SubstringMatcher;
-
 public class ComplexFunction implements complex_function {
-
 	private Operation op;
 	private function left, right;
 
@@ -15,127 +12,125 @@ public class ComplexFunction implements complex_function {
 		this.right = right;
 	}
 
-	public ComplexFunction() {
-		this.op = null;
-		this.left = null;
-		this.right = null;
+	public ComplexFunction(String op, function left, function right) {
+		this.left = left;
+		this.right = right;
+		String opString = op.toLowerCase();
+		switch (opString) {
+		case "plus":
+			this.op = Operation.Plus;
+			break;
+		case "mul":
+			this.op = Operation.Times;
+			break;
+		case "times":
+			this.op = Operation.Times;
+			break;
+		case "div":
+			this.op = Operation.Divid;
+			break;
+		case "min":
+			this.op = Operation.Min;
+			break;
+		case "max":
+			this.op = Operation.Max;
+			break;
+		case "com":
+			this.op = Operation.Comp;
+			break;
+		case "none":
+			this.op = Operation.None;
+			break;
+		case "error":
+			this.op = Operation.Error;
+			break;
+		default:
+			System.out.println("Invalid input");
+			break;
+		}
 	}
+
 	public ComplexFunction(function left) {
 		this.op = Operation.None;
 		this.left = left;
 		this.right = null;
 	}
 
-	public boolean isCorrect(String s) {
-		int numOf = 0;
-		for (int i = 0; i < s.length(); i++) {
-			if (s.charAt(i) == '(') {
-				numOf++;
-			}
-			if (s.charAt(i) == ')') {
-				numOf--;
-			}
-			if (numOf < 0) {
-				return false;
-			}
-		}
-		if (numOf != 0) {
-			return false;
-		}
-		return true;
-
+	public ComplexFunction() {
+		this.op = null;
+		this.left = null;
+		this.right = null;
 	}
 
 	public function initFromString(String s) {
-
-		if (!isCorrect(s)) {
-			throw new RuntimeException("Uncorrect");
+		if (!s.contains(",")) {
+			return new Polynom(s);
 		}
-		if (s.startsWith("plus")) {
-			this.op = Operation.Plus;
-			s = s.substring(5, s.length());
-			this.left = cutString(s);
-			s = s.substring(s.indexOf(",") + 1);
-			this.right = cutString(s);
+		int index = 1;
+		int i = s.indexOf("(") + 1;
+		for (; i < s.length(); i++) {
+			if (s.charAt(i) == '(') {
+				index++;
+			}
+			if (s.charAt(i) == ',') {
+				index--;
+			}
+			if (index == 0) {
+				break;
+			}
 		}
-		if (s.startsWith("Divid")) {
-			this.op = Operation.Divid;
-			s = s.substring(6, s.length());
-			this.left = cutString(s);
-			s = s.substring(s.indexOf(",") + 1);
-			this.right = cutString(s);
-		}
-		if (s.startsWith("mul")) {
-			this.op = Operation.Times;
-			s = s.substring(4, s.length());
-			this.left = cutString(s);
-			s = s.substring(s.indexOf(",") + 1);
-			this.right = cutString(s);
-		}
-		if (s.startsWith("max")) {
-			this.op = Operation.Max;
-			s = s.substring(4, s.length());
-			this.left = cutString(s);
-			s = s.substring(s.indexOf(",") + 1);
-			this.right = cutString(s);
-		}
-		if (s.startsWith("min")) {
-			this.op = Operation.Min;
-			s = s.substring(4, s.length());
-			this.left = cutString(s);
-			s = s.substring(s.indexOf(",") + 1);
-			this.right = cutString(s);
-		}
-		if (s.startsWith("com")) {
-			this.op = Operation.Comp;
-			s = s.substring(4, s.length());
-			this.left = cutString(s);
-			s = s.substring(s.indexOf(",") + 1);
-			this.right = cutString(s);
-		}
-		ComplexFunction cf = new ComplexFunction(op, left, right);
+		function left = initFromString(s.substring(s.indexOf("(") + 1, i));
+		function right = initFromString(s.substring(i + 1, s.lastIndexOf(")")));
+		function cf = new ComplexFunction(s.substring(0, s.indexOf("(")), left, right);
 		return cf;
 	}
 
-	public function cutString(String s) {
-		String n = "";
-		for (int i = 0; i < s.length(); i++) {
-			if (i >= 1 && (s.charAt(i) == ',' || s.charAt(i) == ')')) {
-				break;
-			}
-			n += s.charAt(i);
-		}
-		if (n.contains("+") || n.contains("-")) {
-			Polynom p = new Polynom(n);
-			return p;
-		} else {
-			Monom a = new Monom(n);
-			return a;
-		}
-
-	}
-
 	public double f(double x) {
-		return x;
+		double sum = 0;
+		if (this.op == Operation.Plus) {
+			sum += this.left.f(x) + this.right.f(x);
+		}
+		if (this.op == Operation.Min) {
+			sum += Math.min(this.left.f(x), this.right.f(x));
+		}
+		if (this.op == Operation.Max) {
+			sum += Math.max(this.left.f(x), this.right.f(x));
+		}
+		if (this.op == Operation.Times) {
+			sum += this.left.f(x) * this.right.f(x);
+		}
+		if (this.op == Operation.Divid) {
+			sum += this.left.f(x) / this.right.f(x);
+		}
+		return sum;
 	}
 
 	/**
 	 * return a String representing this complex function
 	 */
-	/*
-	 * public String toString() { String ans = ""; ans += cf.get(0); for (int i = 1;
-	 * i < this.cf.size(); i++) { if(cf.get(i).toString().charAt(0) ) ans +=
-	 * cf.get(i); } return ans; }
-	 */
+	public String toString() {
+		String ans = "";
+		ans += this.op + "(" + this.left + "," + this.right + ")";
+		return ans;
+	}
+
 	public function copy() {
-		String copyS = this.toString();
-		ComplexFunction copy = new ComplexFunction();
-		copy.initFromString(copyS);
+		String s = this.toString();
+		function copy = new ComplexFunction();
+		copy.initFromString(s);
 		return copy;
 	}
 
 	public boolean equals(Object obj) {
-		return false;
+		double arr[] = { -3, -1, 0, 1, 2, 4.2, 3.2, 7, 4, 10, 1.4 };
+		function f = initFromString(obj.toString());
+		for (int i = 0; i < arr.length; i++) {
+			double x = arr[i];
+			if (this.f(x) != f.f(x)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -144,11 +139,9 @@ public class ComplexFunction implements complex_function {
 	 * @param f1 the complex_function which will be added to this complex_function.
 	 */
 	public void plus(function f1) {
-		function copy;
-		copy = this.copy();
-		this.left = copy;
-		this.right = f1;
+		this.left = this;
 		this.op = Operation.Plus;
+		this.right = f1;
 	}
 
 	/**
@@ -158,11 +151,9 @@ public class ComplexFunction implements complex_function {
 	 *           complex_function.
 	 */
 	public void mul(function f1) {
-		function copy;
-		copy = this.copy();
-		this.left = copy;
-		this.right = f1;
+		this.left = this;
 		this.op = Operation.Times;
+		this.right = f1;
 	}
 
 	/**
@@ -171,11 +162,9 @@ public class ComplexFunction implements complex_function {
 	 * @param f1 the complex_function which will be divid this complex_function.
 	 */
 	public void div(function f1) {
-		function copy;
-		copy = this.copy();
-		this.left = copy;
-		this.right = f1;
+		this.left = this;
 		this.op = Operation.Divid;
+		this.right = f1;
 	}
 
 	/**
@@ -185,11 +174,9 @@ public class ComplexFunction implements complex_function {
 	 *           complex_function - to compute the maximum.
 	 */
 	public void max(function f1) {
-		function copy;
-		copy = this.copy();
-		this.left = copy;
-		this.right = f1;
+		this.left = this;
 		this.op = Operation.Max;
+		this.right = f1;
 	}
 
 	/**
@@ -199,11 +186,9 @@ public class ComplexFunction implements complex_function {
 	 *           complex_function - to compute the minimum.
 	 */
 	public void min(function f1) {
-		function copy;
-		copy = this.copy();
-		this.left = copy;
-		this.right = f1;
+		this.left = this;
 		this.op = Operation.Min;
+		this.right = f1;
 	}
 
 	/**
@@ -212,7 +197,9 @@ public class ComplexFunction implements complex_function {
 	 * @param f1 complex function
 	 */
 	public void comp(function f1) {
-
+		this.left = this;
+		this.op = Operation.Comp;
+		this.right = f1;
 	}
 
 	/**
@@ -232,10 +219,7 @@ public class ComplexFunction implements complex_function {
 	 * @return a function representing the left side of this complex funcation
 	 */
 	public function right() {
-		if (this.right != null) {
-			return this.right;
-		}
-		return null;
+		return this.right;
 	}
 
 	/**
@@ -247,9 +231,5 @@ public class ComplexFunction implements complex_function {
 		return this.op;
 	}
 
-	public String toString() {
-		String ans = "";
-		ans += this.op + "(" + this.left + "," + this.right + ")";
-		return ans;
-	}
+
 }
