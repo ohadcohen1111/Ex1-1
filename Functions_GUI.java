@@ -1,21 +1,21 @@
 package Ex1;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Iterator;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Scanner;
-import java.io.FileNotFoundException;
 
 public class Functions_GUI implements functions {
 	private ArrayList<function> fc = new ArrayList<function>();
-	private FileReader FileRead;
 
 	public Functions_GUI() {
 		this.fc = new ArrayList<function>();
@@ -25,17 +25,11 @@ public class Functions_GUI implements functions {
 		this.fc.addAll(c);
 	}
 
-	/**
-	 * Init a new collection of functions from a file
-	 * 
-	 * @param file - the file name
-	 * @throws IOException if the file does not exists of unreadable (wrong format)
-	 */
 	public void initFromFile(String file) throws IOException {
+		FileReader fileRead = new FileReader(file);
 		ComplexFunction cf = new ComplexFunction();
 		String strCurrentLine;
-		this.FileRead = new FileReader(file);
-		BufferedReader fileread = new BufferedReader(this.FileRead);
+		BufferedReader fileread = new BufferedReader(fileRead);
 		while ((strCurrentLine = fileread.readLine()) != null) {
 			function f = cf.initFromString(strCurrentLine);
 			this.fc.add(f);
@@ -43,11 +37,6 @@ public class Functions_GUI implements functions {
 		fileread.close();
 	}
 
-	/**
-	 * 
-	 * @param file - the file name
-	 * @throws IOException if the file is not writable
-	 */
 	public void saveToFile(String file) throws IOException {
 		FileWriter filewrite = new FileWriter(file);
 		for (int i = 0; i < this.fc.size(); i++) {
@@ -56,17 +45,6 @@ public class Functions_GUI implements functions {
 		filewrite.close();
 	}
 
-	/**
-	 * Draws all the functions in the collection in a GUI window using the given
-	 * parameters for the GUI window and the range & resolution
-	 * 
-	 * @param width      - the width of the window - in pixels
-	 * @param height     - the height of the window - in pixels
-	 * @param rx         - the range of the horizontal axis
-	 * @param ry         - the range of the vertical axis
-	 * @param resolution - the number of samples with in rx: the X_step =
-	 *                   rx/resulution
-	 */
 	public void drawFunctions(int width, int height, Range rx, Range ry, int resolution) {
 
 		// window size
@@ -97,7 +75,7 @@ public class Functions_GUI implements functions {
 		StdDraw.line(rx.get_min(), 0, rx.get_max(), 0);
 		StdDraw.line(0, ry.get_min(), 0, ry.get_max());
 		for (int i = (int) rx.get_min(); i <= rx.get_max(); i++) {
-			StdDraw.text(i ,-0.5, Integer.toString(i));
+			StdDraw.text(i, -0.5, Integer.toString(i));
 		}
 
 		// y axis
@@ -127,11 +105,40 @@ public class Functions_GUI implements functions {
 	 *                  default values.
 	 */
 	public void drawFunctions(String json_file) {
+		Object obj = null;
+		try {
+			JSONParser jp = new JSONParser();
+			FileReader fr = new FileReader(json_file);
+			obj = jp.parse(fr);
+		} catch (IOException | ParseException e) {
+			int Width = 1000;
+			int Height = 600;
+			int Resolution = 200;
+			Range x = new Range(-10, 10);
+			Range y = new Range(-5, 15);
+			drawFunctions(Width, Height, x, y, Resolution); // draw the functions with the default value
+		}
 
-		/*
-		 * { "Width":1000, "Height":600, "Resolution":200, "Range_X":[-10,10],
-		 * "Range_Y":[-5,15] }
-		 */
+		// type casting obj to JSONObject
+		JSONObject jo = (JSONObject) obj;
+
+		// getting width, height and resolution
+		int Width = (int) (long) jo.get("Width");
+		int Height = (int) (long) jo.get("Height");
+		int Resolution = (int) (long) jo.get("Resolution");
+
+		// getting range
+		JSONArray Range_X = (JSONArray) jo.get("Range_X");
+		JSONArray Range_Y = (JSONArray) jo.get("Range_Y");
+
+		double minY = (long) Range_Y.get(0);
+		double maxY = (long) Range_Y.get(1);
+		double minX = (long) Range_X.get(0);
+		double maxX = (long) Range_X.get(1);
+		Range x = new Range(minX, maxX);
+		Range y = new Range(minY, maxY);
+
+		drawFunctions(Width, Height, x, y, Resolution); // draw the functions with the value
 	}
 
 	@Override
@@ -210,29 +217,4 @@ public class Functions_GUI implements functions {
 		}
 		return ans;
 	}
-
-	/*
-	 * default boolean removeIf(Predicate<? super E> filter) {
-	 * Objects.requireNonNull(filter); boolean removed = false; final Iterator<E>
-	 * each = iterator(); while (each.hasNext()) { if (filter.test(each.next())) {
-	 * each.remove(); removed = true; } } return removed; }
-	 */
-
-	/*
-	 * @Override
-	 * 
-	 * default Spliterator<E> spliterator() { return Spliterators.spliterator(this,
-	 * 0); }
-	 * 
-	 * 
-	 * default Stream<E> stream() { return StreamSupport.stream(spliterator(),
-	 * false); }
-	 * 
-	 * 
-	 * 
-	 * 
-	 * default Stream<E> parallelStream() { return
-	 * StreamSupport.stream(spliterator(), true); }
-	 */
-
 }
