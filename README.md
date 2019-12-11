@@ -1,4 +1,6 @@
 # Ex1 
+
+#Ex1
 is an extetion of Ex0 , we implement tthe classes Complex_Funtion and Function_GUI.
 
 #Monom class:
@@ -10,9 +12,9 @@ This class represents a Polynom
 This interface represents a general Polynom: f(x) = a_1X^b_1 + a_2*X^b_2 ... a_n*Xb_n,
  * where: a_1, a_2 ... a_n are real numbers and b_1<b_2..<b_n are none negative integers (naturals)
 with add, multiply  functionality, it also should support the following:
- * 1. Riemann's Integral: 
- * 2. Finding a numerical value between two values (currently 
- * 3. Derivative
+  1. Riemann's Integral: 
+  2. Finding a numerical value between two values (currently 
+  3. Derivative
 
 #ComplexFunction class:
 This cless represents a complex function:
