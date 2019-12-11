@@ -35,16 +35,19 @@ public class Monom implements function {
 	public static final Comparator<Monom> _Comp = new Monom_Comperator();
 
 	public function initFromString(String s) {
-		
-		return null;
+		function f = new Monom(s);
+		return f;
 	}
 
 	public function copy() {
-		return null;
+		function copy = new Monom(this._coefficient, this._power);
+		return copy;
+
 	} // clone
 
 	public boolean equals(Object obj) {
-		return this.equals(obj);
+		Monom m = new Monom((Monom) obj);
+		return this.equals(m);
 	}
 
 	public static Comparator<Monom> getComp() {
@@ -94,9 +97,8 @@ public class Monom implements function {
 		return Math.abs(this.get_coefficient()) <= EPSILON;
 	}
 
-	// ***************** add your code below **********************
-	@SuppressWarnings("unlikely-arg-type")
 	public Monom(String s) {
+		s = s.replace(" ", "");
 		double extractedCoefficient = this.extract_coefficient(s);
 		int extractedPower = this.extract_power(s);
 		if (extractedCoefficient != 0) {
@@ -112,6 +114,9 @@ public class Monom implements function {
 			if (s.isEmpty()) {
 				return 0;
 			} else {
+				if (s.startsWith("+")) {
+					s = s.substring(1);
+				}
 
 				if (s.contains("x")) {
 
