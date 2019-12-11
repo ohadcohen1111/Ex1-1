@@ -16,11 +16,11 @@ with add, multiply  functionality, it also should support the following:
   2. Finding a numerical value between two values (currently 
   3. Derivative
 
-**#ComplexFunction class:**
+**ComplexFunction class:**
 This cless represents a complex function:
 operation(function f1,functionf2)
 that the operation are : plus, multiply, divide, minimum, maximum, none, error.
 function can be : monom, polynom or complex function. 
 
-**#Function_GUI:**
+**Function_GUI:**
 this class represent a new collection of functions that can be save into a file, init from a file, and draw the collection of function.    
