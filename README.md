@@ -24,4 +24,3 @@ function can be : monom, polynom or complex function.
 
 #Function_GUI:
 this class represent a new collection of functions that can be save into a file, init from a file, and draw the collection of function.    
-
