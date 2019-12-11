@@ -170,10 +170,6 @@ public class Functions_GUI implements functions {
 		return null;
 	}
 
-//	default <T> T[] toArray(IntFunction<T[]> generator) {
-//		return toArray(generator.apply(0));
-//	}
-
 	public boolean add(function e) {
 		return this.fc.add(e);
 	}
@@ -217,4 +213,5 @@ public class Functions_GUI implements functions {
 		}
 		return ans;
 	}
+
 }
