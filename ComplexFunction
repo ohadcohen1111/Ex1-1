@@ -1,19 +1,40 @@
 package Ex1;
 
-import java.util.ArrayList;
-
 public class ComplexFunction implements complex_function {
 	private Operation op;
 	private function left, right;
 
 	public ComplexFunction(Operation op, function left, function right) {
-		this.op = op;
+		if (left == null) {
+			throw new InvalidInputException("undefind function");
+		} // function left cannot be null
 		this.left = left;
+		if (op == Operation.None || right == null) {// if operation is None <---> function right is null
+			if (right != null) {
+				throw new InvalidInputException("undefind function");
+			}
+			if (op != Operation.None) {
+				throw new InvalidInputException("undefind function");
+			}
+		}
+		this.op = op;
 		this.right = right;
 	}
 
 	public ComplexFunction(String op, function left, function right) {
+
+		if (left == null) {
+			throw new InvalidInputException("Undefind function");
+		} // function left cannot be null
 		this.left = left;
+		if (op.toLowerCase() == "none" || right == null) {// if operation is None <---> function right is null
+			if (right != null) {
+				throw new InvalidInputException("undefind function");
+			}
+			if (!op.toLowerCase().equals("none")) {
+				throw new InvalidInputException("undefind function");
+			}
+		}
 		this.right = right;
 		String opString = op.toLowerCase();
 		switch (opString) {
@@ -29,13 +50,16 @@ public class ComplexFunction implements complex_function {
 		case "div":
 			this.op = Operation.Divid;
 			break;
+		case "divid":
+			this.op = Operation.Divid;
+			break;
 		case "min":
 			this.op = Operation.Min;
 			break;
 		case "max":
 			this.op = Operation.Max;
 			break;
-		case "com":
+		case "comp":
 			this.op = Operation.Comp;
 			break;
 		case "none":
@@ -56,33 +80,43 @@ public class ComplexFunction implements complex_function {
 		this.right = null;
 	}
 
-	public ComplexFunction() {
+	public ComplexFunction() {// empty constructor
 		this.op = null;
 		this.left = null;
 		this.right = null;
 	}
 
 	public function initFromString(String s) {
-		if (!s.contains(",")) {
-			return new Polynom(s);
+		try {
+			if (!s.contains(",")) {
+				if (s.equals("null")) {
+					return null;
+				} else {
+					return new Polynom(s);
+				}
+			}
+			int index = 1;
+			int i = s.indexOf("(") + 1;
+			for (; i < s.length(); i++) {
+				if (s.charAt(i) == '(') {
+					index++;
+				}
+				if (s.charAt(i) == ',') {
+					index--;
+				}
+				if (index == 0) {
+					break;
+				}
+			}
+			function left = initFromString(s.substring(s.indexOf("(") + 1, i));// take the left side of the complex
+																				// function
+			function right = initFromString(s.substring(i + 1, s.lastIndexOf(")"))); // take the right side of the
+																						// complex function
+			function cf = new ComplexFunction(s.substring(0, s.indexOf("(")), left, right);
+			return cf;
+		} catch (Exception e) {
+			throw new InvalidInputException("Invalid input");
 		}
-		int index = 1;
-		int i = s.indexOf("(") + 1;
-		for (; i < s.length(); i++) {
-			if (s.charAt(i) == '(') {
-				index++;
-			}
-			if (s.charAt(i) == ',') {
-				index--;
-			}
-			if (index == 0) {
-				break;
-			}
-		}
-		function left = initFromString(s.substring(s.indexOf("(") + 1, i));
-		function right = initFromString(s.substring(i + 1, s.lastIndexOf(")")));
-		function cf = new ComplexFunction(s.substring(0, s.indexOf("(")), left, right);
-		return cf;
 	}
 
 	public double f(double x) {
@@ -100,14 +134,23 @@ public class ComplexFunction implements complex_function {
 			sum += this.left.f(x) * this.right.f(x);
 		}
 		if (this.op == Operation.Divid) {
+			if (this.right.f(x) == 0) {
+				throw new InvalidInputException("can't divid in 0");
+			}
 			sum += this.left.f(x) / this.right.f(x);
+		}
+		if (this.op == Operation.Comp) {
+			sum += this.left.f(this.right.f(x));
+		}
+		if (this.op == Operation.None) {
+			sum += this.left.f(x);
+		}
+		if (this.op == Operation.Error) {
+			throw new InvalidInputException("undefind function");
 		}
 		return sum;
 	}
 
-	/**
-	 * return a String representing this complex function
-	 */
 	public String toString() {
 		String ans = "";
 		ans += this.op + "(" + this.left + "," + this.right + ")";
@@ -115,9 +158,7 @@ public class ComplexFunction implements complex_function {
 	}
 
 	public function copy() {
-		String s = this.toString();
-		function copy = new ComplexFunction();
-		copy.initFromString(s);
+		function copy = new ComplexFunction(this.op, this.left, this.right);
 		return copy;
 	}
 
@@ -133,101 +174,71 @@ public class ComplexFunction implements complex_function {
 		return true;
 	}
 
-	/**
-	 * Add to this complex_function the f1 complex_function
-	 * 
-	 * @param f1 the complex_function which will be added to this complex_function.
-	 */
 	public void plus(function f1) {
-		this.left = this;
+		function copy;
+		copy = this.copy();
+		this.left = copy;
+		this.right = f1;
 		this.op = Operation.Plus;
-		this.right = f1;
 	}
 
-	/**
-	 * Multiply this complex_function with the f1 complex_function
-	 * 
-	 * @param f1 the complex_function which will be multiply be this
-	 *           complex_function.
-	 */
 	public void mul(function f1) {
-		this.left = this;
+		function copy;
+		copy = this.copy();
+		this.left = copy;
+		this.right = f1;
 		this.op = Operation.Times;
-		this.right = f1;
 	}
 
-	/**
-	 * Divides this complex_function with the f1 complex_function
-	 * 
-	 * @param f1 the complex_function which will be divid this complex_function.
-	 */
 	public void div(function f1) {
-		this.left = this;
+		function copy;
+		copy = this.copy();
+		this.left = copy;
+		this.right = f1;
 		this.op = Operation.Divid;
-		this.right = f1;
 	}
 
-	/**
-	 * Computes the maximum over this complex_function and the f1 complex_function
-	 * 
-	 * @param f1 the complex_function which will be compared with this
-	 *           complex_function - to compute the maximum.
-	 */
 	public void max(function f1) {
-		this.left = this;
+		function copy;
+		copy = this.copy();
+		this.left = copy;
+		this.right = f1;
 		this.op = Operation.Max;
-		this.right = f1;
 	}
 
-	/**
-	 * Computes the minimum over this complex_function and the f1 complex_function
-	 * 
-	 * @param f1 the complex_function which will be compared with this
-	 *           complex_function - to compute the minimum.
-	 */
 	public void min(function f1) {
-		this.left = this;
+		function copy;
+		copy = this.copy();
+		this.left = copy;
+		this.right = f1;
 		this.op = Operation.Min;
-		this.right = f1;
 	}
 
-	/**
-	 * This method wrap the f1 complex_function with this function: this.f(f1(x))
-	 * 
-	 * @param f1 complex function
-	 */
 	public void comp(function f1) {
-		this.left = this;
-		this.op = Operation.Comp;
+		function copy;
+		copy = this.copy();
+		this.left = copy;
 		this.right = f1;
+		this.op = Operation.Comp;
 	}
 
-	/**
-	 * returns the left side of the complex function - this side should always
-	 * exists (should NOT be null).
-	 * 
-	 * @return a function representing the left side of this complex funcation
-	 */
 	public function left() {
 		return this.left;
 	}
 
-	/**
-	 * returns the right side of the complex function - this side might not exists
-	 * (aka equals null).
-	 * 
-	 * @return a function representing the left side of this complex funcation
-	 */
 	public function right() {
 		return this.right;
 	}
 
-	/**
-	 * The complex_function oparation: plus, mul, div, max, min, comp
-	 * 
-	 * @return
-	 */
 	public Operation getOp() {
 		return this.op;
+	}
+
+	public static void main(String[] args) {
+		function p = new Polynom("2x^4+5x^2");
+		function p1 = new Polynom("2x^8");
+		ComplexFunction cf = new ComplexFunction();
+		function f1 = cf.initFromString("plus(2x,)");
+		System.out.println(f1);
 	}
 }
