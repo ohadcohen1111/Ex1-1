@@ -67,12 +67,14 @@ public class Polynom implements Polynom_able {
 	/**
 	 * Zero (empty polynom)
 	 */
-	public Iterator<Monom> iteretor() {
-		return null;
+	public function copy() {
+		function copy = this;
+		return copy;
 	}
 
 	public function initFromString(String s) {
-		return null;
+		function f = new Polynom(s);
+		return f;
 	}
 
 	public Polynom() {
@@ -94,7 +96,7 @@ public class Polynom implements Polynom_able {
 	 */
 
 	public Polynom(String s) {
-
+		s = s.replace(" ", "");
 		while (!s.isEmpty()) {
 
 			// get the next monom
@@ -174,7 +176,7 @@ public class Polynom implements Polynom_able {
 	public void add(Polynom_able p1) {
 
 		Polynom cloned = new Polynom((Polynom) p1);
-		Iterator<Monom> iterator = cloned.iterator();
+		Iterator<Monom> iterator = cloned.iteretor();
 
 		while (iterator.hasNext()) {
 			this.add(iterator.next());
@@ -198,7 +200,7 @@ public class Polynom implements Polynom_able {
 
 		Polynom cloned = new Polynom((Polynom) p1);
 
-		Iterator<Monom> iterator = cloned.iterator();
+		Iterator<Monom> iterator = cloned.iteretor();
 
 		while (iterator.hasNext()) {
 			Monom m = new Monom(iterator.next());
@@ -220,7 +222,7 @@ public class Polynom implements Polynom_able {
 		// clear the current polynom list
 		this.polynomList.clear();
 
-		Iterator<Monom> iterator = p1.iterator();
+		Iterator<Monom> iterator = p1.iteretor();
 
 		while (iterator.hasNext()) {
 			Polynom originalPolynomCloned = new Polynom(originalPolynom);
@@ -229,11 +231,10 @@ public class Polynom implements Polynom_able {
 		}
 	}
 
-	@Override
-	public boolean equals(Polynom_able p1) {
-		Polynom cloned = new Polynom(this);
-		cloned.substract(p1);
-		return cloned.isZero();
+	public boolean equals(Object p1) {
+		Polynom clone = new Polynom(this);
+		clone.substract((Polynom) p1);
+		return clone.isZero();
 	}
 
 	@Override
@@ -272,16 +273,6 @@ public class Polynom implements Polynom_able {
 	}
 
 	@Override
-	public Polynom_able copy() {
-		Polynom_able other = new Polynom();
-		for (int i = 0; i < this.polynomList.size(); i++) {
-			Monom m = new Monom(polynomList.get(i));
-			other.add(m);
-		}
-		return other;
-	}
-
-	@Override
 	public Polynom_able derivative() {
 		for (int i = 0; i < polynomList.size(); i++) {
 			this.polynomList.get(i).derivative();
@@ -304,7 +295,7 @@ public class Polynom implements Polynom_able {
 	}
 
 	@Override
-	public Iterator<Monom> iterator() {
+	public Iterator<Monom> iteretor() {
 		// TODO Auto-generated method stub
 		return polynomList.iterator();
 	}
